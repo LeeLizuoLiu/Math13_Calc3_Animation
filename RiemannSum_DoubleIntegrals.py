@@ -3,13 +3,27 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from mpl_toolkits.mplot3d import Axes3D
 
+# Add this import at the top
+from scipy import integrate
+
+
 # Define the function to integrate
 def f(x, y):
     return x**2 + y**2
 
+
 # Domain boundaries
 x_min, x_max = 0, np.pi
 y_min, y_max = 0, np.pi
+
+# Add this after defining the function f(x,y)
+# Calculate the exact value of the integral
+def exact_integral():
+    result, _ = integrate.dblquad(f, y_min, y_max, lambda y: x_min, lambda y: x_max)
+    return result
+
+# Get the exact value
+exact_value = exact_integral()
 
 # Create figure
 fig = plt.figure(figsize=(10, 8))
@@ -70,8 +84,11 @@ def update(n):
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
-    ax.set_title(f'Riemann Sum with {n_subdivisions-1}×{n_subdivisions-1} rectangles\nSum = {riemann_sum:.4f}')
-
+    # ax.set_title(f'Riemann Sum with {n_subdivisions-1}×{n_subdivisions-1} rectangles\nSum = {riemann_sum:.4f}')
+    # Then modify the title line in the update function to include the exact value:
+    ax.set_title(f'Riemann Sum with {n_subdivisions-1}×{n_subdivisions-1} rectangles\n' 
+                 f'Approximation = {riemann_sum:.6f}, Exact = {exact_value:.6f}, ' 
+                 f'Error = {abs(riemann_sum - exact_value):.6f}')
 # Create animation
 ani = FuncAnimation(fig, update, frames=range(1, 10), interval=1000)
 
